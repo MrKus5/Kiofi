@@ -1,0 +1,37 @@
+name: Issue Listener
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write 
+  contents: write
+
+jobs:
+  process_issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Issue Body
+        id: issue_body
+        run: echo "event :${{ github.event.issue.body }}"
+
+      - name: Update Users List
+        run: node update-users.js ${{ steps.issue_body.outputs.body }}
+        env:
+          EVENT_RAW: ${{ github.event.issue.body }}
+      
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+
+
+      - name: Close initial issue
+        run: gh issue close --comment "Auto-closing issue" $ISSUE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
