@@ -1,2 +1,2 @@
-Jo Example : 5.00€/mois
+Jo Example : 3.00€
 Ranily : 10.00€/mois
